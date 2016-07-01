@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html ng-app="listaTelefonica">
+<head>
+	<meta charset="utf-8">
+	<title>Lista Telefônica</title>
+
+	<link rel="stylesheet" type="text/css" href="lib/bootstrap/css/bootstrap.css">
+	<link rel="stylesheet" type="text/css" href="css/site.css">
+	
+	<script src="lib/angular/angular.js"></script>
+	<script src="lib/angular/angular-messages.js"></script>
+	<script src="lib/angular/locale/angular-locale_pt-br.js"></script>
+	
+	<script src="scripts/app.js"></script>
+	<script src="scripts/controllers/listaTelefonicaCtrl.js"></script>
+
+</head>
+<body ng-controller="listaTelefonicaCtrl">
+	<div class="jumbotron">
+		<h3>{{app}}</h3>
+		<input type="text" class="form-control" ng-model="criterioDeBusca" placeholder="O que você está buscando?">
+
+		<table ng-show="contatos.length > 0" class="table table-striped">
+			<tr>
+				<th></th>
+				<th><a href="" ng-click="ordenarPor('nome')">Nome</a></th>
+				<th><a href="" ng-click="ordenarPor('telefone')">Telefone</a></th>
+				<th>Operadora</th>
+				<th>Data</th>
+				<th></th>
+			</tr>
+			<tr ng-repeat="contato in contatos | filter:criterioDeBusca | orderBy:criterioOrdenacao:direcaoOrder" ng-class="{selecionado: contato.selecionado, negrito: contato.selecionado}">
+				<td><input type="checkbox" ng-model="contato.selecionado"/></td>
+				<td>{{contato.nome | limitTo:30}}</td>
+				<td>{{contato.telefone}}</td>
+				<td>{{contato.operadora.nome}}</td>
+				<td>{{contato.data | date:'dd/MM/yyyy HH:mm'}}</td> 
+				<!-- 
+					O pipe (|) indica para o Angular que a expression possui um filtro, mas no sentido de tratamento de dados, 
+					a palavra "date" e a string em seguida, informa o formato de filtro a ser aplicado
+				 -->
+				<td><div style="width: 20px; height: 20px" ng-style="{'background-color': contato.cor}"></div></td>
+			</tr>
+		</table>
+		<hr/>
+
+		<!--
+		<select  class="form-control" ng-model="contato.tpInsc" ng-options="tipoInscricao.nome for tipoInscricao in tiposInscricoes">
+			<option value="">Selecione um Tipo de Inscricao</option>
+		</select>
+		<input class="form-control" type="text" name="txtInsc" ng-model="contato.insc" ng-maxlength="contato.tpInsc.len" placeholder="Inscricao">		
+		-->
+		<form name="contatoForm">
+			<input class="form-control" type="text" name="txtNome" ng-model="contato.nome" placeholder="Nome" ng-required="true" ng-minlength="3">
+			<input class="form-control" type="text" name="txtTelefone" ng-model="contato.telefone" placeholder="Telefone" ng-required="true" ng-pattern="/^\d{4,5}-\d{4}$/">
+			<!--
+				Caso seja preciso passar apenas o código de um array, que neste caso é uma operadora, pode se usar a forma abaixo.
+				Caso o trecho antes do "as" seja omitido, o value sera o objeto inteiro
+				<select  class="form-control" ng-model="contato.operadora" ng-options="operadora.codgo as operadora.nome for operadora in operadoras">
+
+				O group by colocado na diretiva "ng-Options" nao eh obrigatorio, ele serve para agrupar os conteudos por campos
+			-->
+			<select  class="form-control" ng-model="contato.operadora" ng-options="operadora.nome + ' ( ' + (operadora.preco | currency) + ' )' group by operadora.categoria for operadora in operadoras">
+				<option value="">Selecione uma Operadora</option>
+			</select>
+		</form>
+
+		<div ng-show="contatoForm.txtNome.$dirty" ng-messages="contatoForm.txtNome.$error">
+			<div ng-message="required && contatoForm.txtNome.$dirty" class="alert alert-danger">
+				Preencha o campo nome!
+			</div>
+			<div ng-message="minlength" class="alert alert-danger">
+				O campo nome deve ter no mínimo 3 caracteres!
+			</div>
+		</div>
+
+		<div ng-show="contatoForm.txtTelefone.$error.required && !contatoForm.txtTelefone.$pristine" class="alert alert-danger">
+			Preencha o campo telefone!
+		</div>
+
+		<div ng-show="contatoForm.txtTelefone.$error.pattern" class="alert alert-danger">
+			O telefone deve ter o formato 99999-9999 ou 9999-9999!
+		</div>
+		
+		<button class="btn btn-primary btn-block" ng-disabled="contatoForm.$invalid" ng-click="addContato(contato)">Adicionar Contatos</button>
+		<!--
+			Alem do "ng-hide" e do "ng-show", existe tambem "ng-if", com a diferenca de que os dois primeiros trabalham na camada visual,
+			ja o "ng-if", trabalha no DOM, quando a expressao resulta em false, o elemento nao eh adicionado no DOM, este eh recomendado
+			quando deseja economizar memoria caso um elemento nao precise estar na tela
+		-->
+		<button class="btn btn-danger btn-block" ng-hide="!isContatoSelecionado(contatos)" ng-click="delContato(contatos)">Apagar Contatos</button>
+
+	</div>
+	<!-- 
+		A diretiva "ng-include" copia o conteudo de outro arquivo para dentro do arquivo em que ela esta.
+		Pelo que entendi, funciona semelhante ao comando "COPY" do COBOL
+	-->
+	<div ng-include="'view/footer.html'"></div>
+
+</body>
+</html>

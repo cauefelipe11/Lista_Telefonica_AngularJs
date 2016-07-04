@@ -27,7 +27,6 @@
 				<th><a href="" ng-click="ordenarPor('telefone')">Telefone</a></th>
 				<th>Operadora</th>
 				<th>Data</th>
-				<th></th>
 			</tr>
 			<tr ng-repeat="contato in contatos | filter:criterioDeBusca | orderBy:criterioOrdenacao:direcaoOrder" ng-class="{selecionado: contato.selecionado, negrito: contato.selecionado}">
 				<td><input type="checkbox" ng-model="contato.selecionado"/></td>
@@ -39,7 +38,6 @@
 					O pipe (|) indica para o Angular que a expression possui um filtro, mas no sentido de tratamento de dados, 
 					a palavra "date" e a string em seguida, informa o formato de filtro a ser aplicado
 				 -->
-				<td><div style="width: 20px; height: 20px" ng-style="{'background-color': contato.cor}"></div></td>
 			</tr>
 		</table>
 		<hr/>

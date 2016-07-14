@@ -1,4 +1,4 @@
-mainControllerFn = function($scope, $http, $filter, uppercaseFilter){
+mainControllerFn = function($scope, $http, $filter, uppercaseFilter, contatosAPI){
 	$scope.app = "Lista Telefônica";
 
 	//$scope.tiposInscricoes = [
@@ -31,10 +31,12 @@ mainControllerFn = function($scope, $http, $filter, uppercaseFilter){
 
 	var carregaContatos = function(){
 
-		$http({
+		/*$http({
 			method: 'POST',
 			url: '.net/api/listaTelefonica/getContatos'
-		}).then(
+		})*/
+
+		contatosAPI.getContatos().then(
 			function success(response){
 				$scope.contatos = response.data;
 				//alert(response.data);

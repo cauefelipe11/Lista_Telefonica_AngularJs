@@ -1,4 +1,4 @@
-mainControllerFn = function($scope, $http, $filter, uppercaseFilter, contatosAPI){
+mainControllerFn = function($scope, $filter, uppercaseFilter, contatosAPI, operadoreasAPI, serialGenerator){
 	$scope.app = "Lista Telefônica";
 
 	//$scope.tiposInscricoes = [
@@ -28,14 +28,7 @@ mainControllerFn = function($scope, $http, $filter, uppercaseFilter, contatosAPI
 		//{nome: "Embratel", codigo: 21, categoria: "Fixo",    preco: 1}
 	];
 
-
 	var carregaContatos = function(){
-
-		/*$http({
-			method: 'POST',
-			url: '.net/api/listaTelefonica/getContatos'
-		})*/
-
 		contatosAPI.getContatos().then(
 			function success(response){
 				$scope.contatos = response.data;
@@ -49,10 +42,7 @@ mainControllerFn = function($scope, $http, $filter, uppercaseFilter, contatosAPI
 	};
 
 	var carregaOperadoras = function(){
-		$http({
-			method: 'POST',
-			url: '.net/api/listaTelefonica/getOperadoras'
-		}).then(
+		operadoreasAPI.getOperadoras().then(
 			function success(response){
 				$scope.operadoras = response.data;
 			},
@@ -63,11 +53,9 @@ mainControllerFn = function($scope, $http, $filter, uppercaseFilter, contatosAPI
 	};
 
 	$scope.addContato = function(contato){				
-		$http({
-			method: 'POST',
-			url: '.net/api/listaTelefonica/saveContato',
-			data: contato
-		}).then(
+		contato.serial = serialGenerator.generate();
+
+		contatosAPI.addContato(contato).then(
 			function success(response){
 				//$scope.contatos.push(angular.copy(contato));
 				carregaContatos();
@@ -78,7 +66,6 @@ mainControllerFn = function($scope, $http, $filter, uppercaseFilter, contatosAPI
 				$scope.message = "Aconteceu um problema: " + response.data;
 			}
 		);
-
 		
 	};
 
